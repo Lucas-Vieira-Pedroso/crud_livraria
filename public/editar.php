@@ -3,10 +3,19 @@
 include "../infra/conexao.php";
 
 $id = $_GET["id"];
-$sql = "SELECT * FROM livros WHERE id = $id";
-$resultado = mysqli_query($conexao, $sql );
+$sql = "SELECT * FROM livros WHERE id = ?";
 
-$livro =mysqli_fetch_assoc($resultado);
+$stmt = mysqli_prepare($conexao, $sql);
+
+if ($stmt) {
+    mysqli_stmt_bind_param($stmt, "i", $id);
+    mysqli_stmt_execute($stmt);
+    $resultado = mysqli_stmt_get_result($stmt);
+    $livro = mysqli_fetch_assoc($resultado);
+    mysqli_stmt_close($stmt);
+} else {
+    echo "Error: " . $sql . "<br>" . $conexao->error;
+}
 
 ?>
 
